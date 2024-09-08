@@ -1,0 +1,65 @@
+# feeder
+feeder: feeders.feeder_ucla.Feeder
+train_feeder_args:
+  data_path: joint
+  label_path: train
+  debug: False
+  random_choose: True
+  random_shift: False
+  random_move: False
+  window_size: 56
+  normalization: False
+  repeat: 5
+
+test_feeder_args:
+  data_path: joint
+  label_path: val
+  debug: False
+
+
+# model
+model: model.hybridformer.HybridFormer
+model_args:
+  num_class: 10
+  num_point: 20
+  num_person: 1
+  num_frames: 56
+  graph: graph.ucla.Graph
+  graph_args:
+    labeling_mode: 'spatial'
+  joint_label: [0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2]
+  depths: [ 4, 3, 2, 2 ]
+  dims: [ 128, 192, 256, 256 ]
+  mhsa_types: [ 'l', 'l', 'g', 'g' ]
+  local_use_mlp: False
+  drop_path: 0.3
+  local_global_fusion: True
+  local_global_fusion_alpha: False
+  local_use_group: True
+  local_use_hop: True  # default True
+  local_hop_bias: False  # local_use_hop and local_hop_bias can not be True at the same time
+  local_use_group_bias: True
+  local_use_outer: True
+  local_use_ajacency: False  # either ajacency or use bcd
+  local_dim_head: 16
+  global_dim_head: 64
+  local_use_multiscale: True  # True is better
+  global_ff_mult: 0
+  global_relational_bias: False
+  global_hop_bias: True  # default True
+  local_learned_partition: 'none'  # 'none' 'single' or 'layerwise'
+  k: 0
+
+#optim
+weight_decay: 0
+base_lr: 0.025
+lr_decay_rate: 0.1
+step: [110, 120]
+
+# training
+device: 0
+batch_size: 16
+test_batch_size: 64
+num_epoch: 150
+nesterov: True
+warm_up_epoch: 5

@@ -1,0 +1,73 @@
+work_dir: ./work_dir/ntu60/xview/hyperformer_joint
+
+# feeder
+feeder: feeders.feeder_ntu.Feeder
+train_feeder_args:
+  data_path: /home/kit/anthropomatik/cy2200/data/NTU60_CV.npz
+  split: train
+  debug: False
+  random_choose: False
+  random_shift: False
+  random_move: False
+  window_size: 64
+  normalization: False
+  random_rot: True
+  p_interval: [0.5, 1]
+  vel: False
+  bone: False
+
+test_feeder_args:
+  data_path: /home/kit/anthropomatik/cy2200/data/NTU60_CV.npz
+  split: test
+  window_size: 64
+  p_interval: [0.95]
+  vel: False
+  bone: False
+  debug: False
+
+# model
+model: model.hybridformer.HybridFormer
+model_args:
+  num_class: 60
+  num_point: 25
+  num_person: 2
+  graph: graph.ntu_rgb_d.Graph
+  graph_args:
+    labeling_mode: 'spatial'
+  joint_label: [0, 4, 2, 2, 2, 2, 1, 1, 2, 2, 1, 1, 2, 3, 3, 3, 2, 3, 3, 3, 1, 0, 1, 0, 1]
+  depths: [4, 3, 2, 2]
+  dims: [128, 192, 256, 256]
+  mhsa_types: ['l', 'l', 'g', 'g']
+  local_use_mlp: False
+  drop_path: 0.3
+  local_global_fusion: True
+  local_global_fusion_alpha: False
+  local_use_group: True
+  local_use_hop: True  # default True
+  local_hop_bias: False  # local_use_hop and local_hop_bias can not be True at the same time
+  local_use_group_bias: True
+  local_use_outer: True
+  local_use_ajacency: False  # either ajacency or use bcd
+  local_dim_head: 16
+  global_dim_head: 64
+  local_use_multiscale: True  # True is better
+  global_ff_mult: 0
+  global_relational_bias: False
+  global_hop_bias: True  # default True
+  local_learned_partition: 'none'
+  k: 0
+
+#optim
+weight_decay: 0.0004
+base_lr: 0.025
+lr_decay_rate: 0.1
+step: [110, 120]
+
+warm_up_epoch: 5
+
+# training
+device: [0]
+batch_size: 64
+test_batch_size: 64
+num_epoch: 140
+nesterov: True
